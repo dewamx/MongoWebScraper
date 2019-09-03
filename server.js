@@ -11,7 +11,7 @@ var PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + "../public"));
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
@@ -22,7 +22,18 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoDBscraper";
-mongoose.connect(MONGODB_URI);
+
+
+var db = process.env.MONGODB_URI || "mongodb://localhost/mongoDBscraper"; 
+
+
+mongoose.connect(db, function(error){
+    if(error){
+        console.log(error);
+    }
+    else{
+        console.log("mongoose good")
+    }
+});
 
 app.listen(PORT, () => console.log(`listening on http://localhost:${PORT}`));
