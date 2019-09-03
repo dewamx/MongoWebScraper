@@ -1,1 +1,8 @@
-// var router = require("express").Router();
+var router = require("express").Router();
+
+router.get("/", (req, res) => {
+    res.render("home");
+})
+
+
+module.exports = router;
