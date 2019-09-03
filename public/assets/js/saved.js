@@ -63,6 +63,69 @@ $(document).ready(function () {
             ].join(""));
         articleContainer.append(emptyAlert);
     }
+    function renderNotesList(data) {
+        var notesToRender = [];
+        var currentNote;
+        if(!data.notes.lenght) {
+            currentNote = [
+                "<li class=`list-group-item`>",
+                "no notes",
+                "</li>"
+            ].join("");
+            notesToRender.push(currentNote);
+        }
+        else{
+            for(var i = 0; i < data.notes.length; i++) {
+                currentNote = $([
+                    "<li class=`list-group-item note`>",
+                    data.notes[i].noteText,
+                    "<button class=`btn btn-danger note-delete`>x</button>",
+                    "</li>"
+                ].join(""));
+                currentNote.children("button").data("_id", data.notes[i]._id);
+                notesToRender.push(currentNote);
+            }
+        }
+        $(".note-container").append(notesToRender);
+    }
+    function handleArticleDelete() {
+        var articleToDelete = $(this).parents(".panel").data();
+        $.ajax({
+            method: "DELETE",
+            url: "/api/headlines/" + articleToDelete._id
+        }).then(function(data) {
+            if(data.ok) {
+                initPage();
+            }
+        });
+    }
+    function handleArticleNotes() {
+        var currentArticle = $(this).parents(".panel").data();
+        $.get("/api/notes/" + currentArticle._id).then(function(data) {
+            var modalText = [
+                "<div class=`container-fluid text-center`>",
+                "<h4>Notes: ",
+                currentArticle._id,
+                "</h4>",
+                "<hr />",
+                "<ul class=`list-group note-container`>",
+                "</ul>",
+                "<textarea placeholder=`new note` rows=`4` cols=`60`></textarea>",
+                "<button class=`btn btn-success save`>save note</button>",
+                "</div>"
+            ].join("");
+            bootbox.dialog({
+                message: modalText,
+                closeButton: true
+            });
+            var noteData = {
+                _id: currentArticle._id,
+                notes: data || []
+            };
+            $(".btn.save").data("article", noteData);
+            renderNotesList(noteData);
+    });
+}
     function handleArticleSave() {
         var articleToSave = $(this).parents(".panel").data();
         articleToSave.saved = true;
