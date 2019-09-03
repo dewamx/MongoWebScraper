@@ -126,26 +126,27 @@ $(document).ready(function () {
             renderNotesList(noteData);
     });
 }
-    function handleArticleSave() {
-        var articleToSave = $(this).parents(".panel").data();
-        articleToSave.saved = true;
-        $.ajax({
-            method: "PATCH",
-            url: "/api/headlines",
-            data: articleToSave
-        })
-        .then(function(data) {
-            if(data.ok) {
-                initPage();
-            }
-        });
+    function handleNoteSave(){
+        var noteData;
+        var newNote = $(".bootbox-body textarea").val().trim();
+        if(newNote){
+            noteData = {
+                _id: $(this).data("article")._id,
+                noteText: newNote
+            };
+            $.post("/api/notes", noteData).then(function() {
+                bootbox.hideAll();
+            })
+        }
     }
-    function handleArticleScrape() {
-        $.get("/api/fetch")
-            .then(function(data) {
-                initPage();
-                bootbox.alert("<h3 class=`text-center m-top-80`>" + data.message + "<h3>");
-            });
+    function handleNoteDelete(){
+        var noteToDelete = $(this).data("_id");
+        $.ajax({
+            url: "/api/notes/" + noteToDelete,
+            method: "DELETE"
+        }).then(function() {
+            bootbox.hideAll();
+        });
     }
 
 });
