@@ -7,24 +7,24 @@ var bodyParser = require("body-parser");
 var app = express();
 var PORT = process.env.PORT || 3000;
 
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+var router = express.Router();
+// app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
 
 app.use(express.static(__dirname + "../public"));
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-app.use(routes);
+
 
 app.use(bodyParser.urlencoded({
     extended: false
 }));
 
+app.use(router);
 
-
-var db = process.env.MONGODB_URI || "mongodb://localhost/mongoDBscraper"; 
+var db = (process.env.MONGODB_URI || "mongodb://localhost/mongoDBscraper", { useNewUrlParser: true }); 
 
 
 mongoose.connect(db, function(error){
