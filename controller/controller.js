@@ -15,17 +15,18 @@ router.get("/", function(req, res) {
 router.get("/scrape", function(req, res) {
   request("http://www.nba.com", function(error, response, html) {
     var $ = cheerio.load(html);
+    
     var titlesArray = [];
 
-    $(".c-entry-box--compact__title").each(function(i, element) {
+    $(".content_list--item_wrapper a").each(function(i, element) {
       var result = {};
 
       result.title = $(this)
-        .children("a")
+        .children("h5")
         .text();
       result.link = $(this)
-        .children("a")
         .attr("href");
+        
 
       if (result.title !== "" && result.link !== "") {
         if (titlesArray.indexOf(result.title) == -1) {
@@ -51,6 +52,7 @@ router.get("/scrape", function(req, res) {
         console.log("Not saved to DB, missing data");
       }
     });
+    
     res.redirect("/");
   });
 });
